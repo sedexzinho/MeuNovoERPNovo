@@ -1,8 +1,10 @@
 package org.example.service;
+
 import org.example.Exception.NomeJaCadastrado;
 import org.example.Exception.ProdutoJaCadastradoException;
 import org.example.conectores.ConexaoBD;
 import org.example.model.Produto;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +14,7 @@ import java.util.List;
 
 public class EstoqueService {
 
-    private List<Produto> produtos;
+    private static List<Produto> produtos;
 
     public EstoqueService() {
         this.produtos = new ArrayList<>();
@@ -48,6 +50,7 @@ public class EstoqueService {
         if (nomeExistente != null) {
             throw new NomeJaCadastrado("Nome ja existente");
         }
+
         produtos.add(produto);
         String sql = "INSERT INTO produto (codigo, nome, precoCusto, precoVenda, quantidadeEstoque) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConexaoBD.getConnection()) {
@@ -88,19 +91,7 @@ public class EstoqueService {
         return null;
     }
 
-    public void mostrarTodosProduto() {
 
-    }
-
-    public Produto ApagarProdutoPorCodigo(String codigo) {
-        for (Produto p : produtos) {
-            if (p.getCodigo().equals(codigo)) {
-                produtos.remove(p);
-                return p;
-            }
-        }
-        return null;
-    }
 
 
 }

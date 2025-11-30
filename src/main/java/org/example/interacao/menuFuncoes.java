@@ -1,8 +1,12 @@
 package org.example.interacao;
 
+import org.example.conectores.ConexaoBD;
 import org.example.model.Produto;
 import org.example.service.EstoqueService;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -82,7 +86,14 @@ public class menuFuncoes {
 
 
     }
-    public static void mostrarTodosProdutos(EstoqueService estoqueService, Scanner scanner) throws SQLException {
-        
+   
+    private Produto mapResultSetToProduto(ResultSet rs) throws SQLException {
+        return new Produto(
+                rs.getString("codigo"),
+                rs.getString("nome"),
+                rs.getDouble("precoCusto"),
+                rs.getDouble("precoVenda"),
+                rs.getInt("quantidadeEstoque")
+        );
     }
 }
