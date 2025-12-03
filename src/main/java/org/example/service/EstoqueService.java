@@ -41,11 +41,11 @@ public class EstoqueService {
     //ADICIONA PRODUTO AO BANCO DE DADOS
     public void adicionarProduto(Produto produto) throws ProdutoJaCadastradoException, NomeJaCadastrado, SQLException {
         Produto existente = buscarPorCodigo(produto.getCodigo());
-        Produto nomeExistente = buscarPorNome(produto.getNome());
+        Produto nomeExiste = buscarPorNome(produto.getNome());
         if (existente != null) {
             throw new ProdutoJaCadastradoException("Ja existe um produto com esse codigo");
         }
-        if (nomeExistente != null) {
+        if (nomeExiste != null) {
             throw new NomeJaCadastrado("Nome ja existente");
         }
 
@@ -65,12 +65,17 @@ public class EstoqueService {
         }
 
     }
-//VALIDACAO PARA ADICIONAR PRODUTO A LISTA POR NOME
-    public Produto buscarPorNome(String nome) {
 
-        for (Produto p : produtos) {
-            if (p.getNome().equals(nome)) {
-                return p;
+    //VALIDACAO PARA ADICIONAR PRODUTO A LISTA POR NOME
+    public Produto buscarPorNome(String nome) throws SQLException {
+
+        String sql = "SELECT * FROM produto WHERE nome = ?";
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToProduto(rs);
             }
         }
         return null;
@@ -109,14 +114,49 @@ public class EstoqueService {
     }
 
     public boolean apagarProdutoPorCodigo(String codigo) throws SQLException {
-        String sql =  "DELETE FROM produto WHERE codigo = ?";
+        String sql = "DELETE FROM produto WHERE codigo = ?";
         try (Connection conn = ConexaoBD.getConnection();
-            PreparedStatement smtm =  conn.prepareStatement(sql)){
-               smtm.setString(1,codigo);
+             PreparedStatement smtm = conn.prepareStatement(sql)) {
+            smtm.setString(1, codigo);
             int linhasAfetadas = smtm.executeUpdate();
             return linhasAfetadas > 0;
         }
     }
 
+    public boolean atualizarNome(String nome, String codigo) throws SQLException {
+        String sql = " UPDATE produto SET nome = ? WHERE codigo = ?";
 
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement smtm = conn.prepareStatement(sql)) {
+            smtm.setString(1, nome);
+            smtm.setString(2, codigo);
+            int linhasAfetadas = smtm.executeUpdate();
+            return linhasAfetadas > 0;
+        }
+    }
+
+    public boolean atualizarPrecoCusto(Double precoCusto, String codigo) throws SQLException {
+        String sql = " UPDATE produto SET precocusto = ? WHERE codigo = ?";
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement smtm = conn.prepareStatement(sql)) {
+            smtm.setDouble(1, precoCusto);
+            smtm.setString(2, codigo);
+            int linhasAfetadas = smtm.executeUpdate();
+            return linhasAfetadas > 0;
+        }
+
+    }
+
+    public boolean atualizarPrecoVenda(Double precoVenda, String codigo) throws SQLException {
+        String sql = " UPDATE produto SET precovenda = ? WHERE codigo = ?";
+        try (Connection conn = ConexaoBD.getConnection();
+             PreparedStatement smtm = conn.prepareStatement(sql)) {
+            smtm.setDouble(1, precoVenda);
+            smtm.setString(2, codigo);
+            int linhasAfetadas = smtm.executeUpdate();
+            return linhasAfetadas > 0;
+        }
+
+    }
+    // CRIAR DATA DE VALIDADE
 }

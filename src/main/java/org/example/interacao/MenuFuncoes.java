@@ -88,7 +88,7 @@ public class MenuFuncoes {
     public void buscarTodosProdutos(EstoqueService estoqueService, Scanner scanner) throws SQLException {
         try {
             List<Produto> produtos = estoqueService.buscarTodosProdutos();
-            if (produtos.isEmpty()){
+            if (produtos.isEmpty()) {
                 System.out.println("Nenhum produto encontrado\n");
             }
             for (Produto p : estoqueService.buscarTodosProdutos()) {
@@ -101,6 +101,7 @@ public class MenuFuncoes {
     }
 
     public void RemoverProduto(EstoqueService estoqueService, Scanner scanner) throws SQLException {
+
         try {
             System.out.println("Digite o codigo do produto: ");
             String codigo = scanner.next();
@@ -114,9 +115,64 @@ public class MenuFuncoes {
 
         } catch (Exception e) {
             System.out.println("Erro ao buscar: " + e.getMessage());
+
+        }
+    }
+
+    public void atualizarDadosProduto(EstoqueService estoqueService, Scanner scanner) {
+        try {
+            System.out.println("Digite o codigo do produto: ");
+            String codigoUsuario = scanner.next();
+            Produto codigo = estoqueService.buscarPorCodigo(codigoUsuario);
+            if (codigo != null) {
+                codigo.exibirInfo();
+                System.out.println("Qual dado do produto deseja atualizar?");
+                int opcaoAtualizar = 0;
+                while (opcaoAtualizar != 4) {
+                    System.out.println("1 - Atualizar nome do produto");
+                    System.out.println("2 - Atualizar valor do custo do produto");
+                    System.out.println("3 - Atualizar valor de venda do produto");
+                    System.out.println("4 - sair");
+                    opcaoAtualizar = scanner.nextInt();
+                    switch (opcaoAtualizar) {
+                        case 1:
+                            System.out.println("Digite o novo nome do produto ");
+                            String novoNome = scanner.next();
+                            Produto nomeExiste = estoqueService.buscarPorNome(novoNome);
+                            if (nomeExiste != null) {
+                                System.out.println("Ja existe um produto com esse nome");
+                            } else {
+                                boolean atualizado = estoqueService.atualizarNome(novoNome, codigoUsuario);
+                                if (atualizado) {
+                                    System.out.println("Produto atualizado com sucesso");
+                                }
+                            }
+                            break;
+
+                        case 2:
+                            System.out.println("Digite o novo valor de custo ");
+                            Double novoValorCusto = scanner.nextDouble();
+                            boolean valorCompraAtualizado = estoqueService.atualizarPrecoCusto(novoValorCusto, codigoUsuario);
+                            if (valorCompraAtualizado ) {
+                                System.out.println("Valor de Compra atualizado com sucesso");
+                            }
+                            break;
+                        case 3:
+                            System.out.println("Digite o novo valor do produto ");
+                            Double novoValorCompra = scanner.nextDouble();
+                            boolean valorAtualizadoCompra = estoqueService.atualizarPrecoVenda(novoValorCompra, codigoUsuario);
+                            if (valorAtualizadoCompra) {
+                                System.out.println("Valor de Venda atualizada com sucesso");
+                            }
+                            break;
+                    }
+                }
+            } else {
+                System.out.println("Produto nao exite");
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao atualizar: " + e.getMessage());
         }
     }
 }
-
-
 
